@@ -44,7 +44,7 @@ async function onSubmit(payload: FormSubmitEvent<Schema>) {
   })
   const { data, error } = await supabase
     .from('users')
-    .select('*')
+    .select('*, roles(*)')
     .eq('email', payload.data.email)
     .single();
 

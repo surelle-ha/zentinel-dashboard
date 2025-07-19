@@ -12,7 +12,7 @@ const items = [[{
 }, {
   label: 'New customer',
   icon: 'i-lucide-user-plus',
-  to: '/customers'
+  to: '/items'
 }]] satisfies DropdownMenuItem[][]
 
 const range = shallowRef<Range>({
@@ -25,14 +25,19 @@ const period = ref<Period>('daily')
 <template>
   <UDashboardPanel id="home">
     <template #header>
-      <UDashboardNavbar title="Store" :ui="{ right: 'gap-3' }">
+      <UDashboardNavbar title="Home" :ui="{ right: 'gap-3' }">
         <template #leading>
           <UDashboardSidebarCollapse />
         </template>
 
         <template #right>
           <UTooltip text="Notifications" :shortcuts="['N']">
-            <UButton color="neutral" variant="ghost" square @click="isNotificationsSlideoverOpen = true">
+            <UButton
+              color="neutral"
+              variant="ghost"
+              square
+              @click="isNotificationsSlideoverOpen = true"
+            >
               <UChip color="error" inset>
                 <UIcon name="i-lucide-bell" class="size-5 shrink-0" />
               </UChip>
@@ -44,6 +49,15 @@ const period = ref<Period>('daily')
           </UDropdownMenu>
         </template>
       </UDashboardNavbar>
+
+      <UDashboardToolbar>
+        <template #left>
+          <!-- NOTE: The `-ms-1` class is used to align with the `DashboardSidebarCollapse` button here. -->
+          <HomeDateRangePicker v-model="range" class="-ms-1" />
+
+          <HomePeriodSelect v-model="period" :range="range" />
+        </template>
+      </UDashboardToolbar>
     </template>
 
     <template #body>

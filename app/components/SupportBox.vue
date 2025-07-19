@@ -5,9 +5,9 @@
       <UForm id="settings" :schema="ticketSchema" :state="profile" @submit="onSubmit">
 
         <UPageCard variant="subtle">
-          <UFormField name="first_name" label="First Name" description="Will appear as your first name on the platform."
+          <UFormField name="subject" label="Subject" description="Please provide a brief subject for your ticket."
             required class="flex max-sm:flex-col justify-between items-start gap-4">
-            <UInput v-model="profile.first_name" autocomplete="off" />
+            <UInput v-model="profile.subject" autocomplete="off" />
           </UFormField>
           <USeparator />
           <UFormField name="last_name" label="Last Name" description="Will appear as your last name on the platform."
@@ -76,7 +76,7 @@ onMounted(() => {
 })
 
 const ticketSchema = z.object({
-  first_name: z.string().min(2, 'Too short'),
+  subject: z.string().min(2, 'Too short'),
   last_name: z.string().min(2, 'Too short'),
   email: z.string().email('Invalid email'),
   phone: z.string().min(10, 'Too short').optional(),
@@ -90,7 +90,7 @@ const ticketSchema = z.object({
 type TicketSchema = z.output<typeof ticketSchema>
 
 const profile = reactive<Partial<TicketSchema>>({
-  first_name: userStore.user?.first_name || '',
+  subject: userStore.user?.subject || '',
   last_name: userStore.user?.last_name || '',
   email: userStore.user?.email || '',
   phone: userStore.user?.phone || '',
