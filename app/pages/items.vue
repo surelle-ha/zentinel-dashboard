@@ -131,6 +131,10 @@ const columns: TableColumn<Item>[] = [
     },
     cell: ({ row }) => {
       return h('div', { class: 'flex items-center gap-3' }, [
+        h(UAvatar, {
+          src: row.original?.app_images?.url,
+          size: 'lg'
+        }),
         h('div', undefined, [
           h('p', { class: 'font-medium text-highlighted' }, row.original.title),
           h('p', { class: '' }, `${row.original.shop_categories.name}`)

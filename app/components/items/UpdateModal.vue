@@ -1,13 +1,13 @@
 <script setup lang="ts">
 import * as z from 'zod'
 import type { FormSubmitEvent } from '@nuxt/ui'
-import { v4 as uuidv4 } from 'uuid'
 import { ref, watch, reactive } from 'vue'
 
 const props = defineProps<{
   item: any | null
   open: boolean
 }>()
+
 const emit = defineEmits(['close', 'update:open'])
 
 const modalOpen = computed({
@@ -15,11 +15,12 @@ const modalOpen = computed({
   set: (val: boolean) => emit('update:open', val)
 })
 
+const toast = useToast()
 const supabase = useSupabaseClient()
 const { categories, updateItem, getCategories, subscribeCategories } = useItem()
 
 onMounted(() => {
-  getCategories();
+  getCategories()
 
   const subscriptionCategories = subscribeCategories()
 
@@ -59,6 +60,13 @@ const state = reactive<Partial<Schema>>({
   is_draft: false
 })
 
+const imageFile = ref<File | null>(null)
+
+const handleImageChange = (e: Event) => {
+  const target = e.target as HTMLInputElement
+  imageFile.value = target?.files?.[0] ?? null
+}
+
 watch(
   () => props.item,
   (item) => {
@@ -78,9 +86,45 @@ watch(
   { immediate: true }
 )
 
-const toast = useToast()
+const uploadImage = async (file: File) => {
+  const formData = new FormData()
+  formData.append('file', file)
+  formData.append('upload_preset', 'codexer')
+  formData.append('cloud_name', 'dvlmnfw8r')
+
+  const res = await fetch('https://api.cloudinary.com/v1_1/dvlmnfw8r/image/upload', {
+    method: 'POST',
+    body: formData,
+  })
+
+  const data = await res.json()
+  if (!data.secure_url) throw new Error('Cloudinary upload failed')
+  return { url: data.secure_url, name: file.name }
+}
+
 const onSubmit = async (event: FormSubmitEvent<Schema>) => {
   if (!props.item) return
+
+  let image_id = props.item.image_id ?? null
+
+  if (imageFile.value) {
+    try {
+      const { url, name } = await uploadImage(imageFile.value)
+
+      const { data: imageData, error: imageError } = await supabase
+        .from('app_images')
+        .insert([{ name, url }] as any)
+        .select()
+        .single<{ id: number }>()
+
+      if (imageError) throw imageError
+      image_id = imageData.id
+    } catch (e) {
+      console.error('Image upload failed:', e)
+      toast.add({ title: 'Upload Failed', description: 'Image upload failed.' })
+      return
+    }
+  }
 
   const result = await updateItem({
     id: props.item.id,
@@ -89,7 +133,7 @@ const onSubmit = async (event: FormSubmitEvent<Schema>) => {
     description: event.data.description,
     price: event.data.price,
     quantity: event.data.quantity,
-    image: event.data.image,
+    image_id,
     category_id: event.data.category,
     is_preorder: event.data.is_preorder,
     is_draft: event.data.is_draft
@@ -98,14 +142,13 @@ const onSubmit = async (event: FormSubmitEvent<Schema>) => {
   if (result) {
     toast.add({ title: 'Success', description: `Item ${event.data.title} updated`, color: 'success' })
     modalOpen.value = false
+    imageFile.value = null
   }
 }
 </script>
 
 <template>
-  <UModal v-model:open="modalOpen" title="New item" description="Add a new item to the database">
-    <UButton label="New item" class="cursor-pointer" icon="i-lucide-plus" />
-
+  <UModal v-model:open="modalOpen" title="Update item" description="Edit item information">
     <template #body>
       <UForm :schema="schema" :state="state" class="space-y-4" @submit="onSubmit">
         <UFormField label="Title" placeholder="Item Name" name="title">
@@ -114,17 +157,18 @@ const onSubmit = async (event: FormSubmitEvent<Schema>) => {
         <UFormField label="Description" placeholder="Item description" name="description">
           <UInput v-model="state.description" class="w-full" />
         </UFormField>
-        <UFormField label="Price (in Philippine Peso)" placeholder="Item price" name="price">
+        <UFormField label="Price (in PHP)" placeholder="Item price" name="price">
           <UInput v-model="state.price" class="w-full" type="number" />
         </UFormField>
         <UFormField label="Quantity" placeholder="Item quantity" name="quantity">
           <UInput v-model="state.quantity" class="w-full" type="number" />
         </UFormField>
-        <UFormField label="Category" placeholder="Item category" name="category">
-          <USelect label="Category" v-model="state.category" placeholder="Item category" class="w-full"
-            :items="categoriesList" />
+        <UFormField label="Category" name="category">
+          <USelect v-model="state.category" placeholder="Item category" class="w-full" :items="categoriesList" />
         </UFormField>
-        
+        <UFormField label="Image" name="image">
+          <UInput type="file" @change="handleImageChange" class="w-full" />
+        </UFormField>
         <UFormField name="is_preorder">
           <UCheckbox v-model="state.is_preorder" label="Pre-order" />
         </UFormField>
@@ -132,8 +176,8 @@ const onSubmit = async (event: FormSubmitEvent<Schema>) => {
           <UCheckbox v-model="state.is_draft" label="Draft" />
         </UFormField>
         <div class="flex justify-end gap-2">
-          <UButton label="Cancel" color="neutral" class="cursor-pointer" variant="subtle" @click="modalOpen = false" />
-          <UButton label="Create" color="primary" class="cursor-pointer" variant="solid" type="submit" />
+          <UButton label="Cancel" color="neutral" variant="subtle" @click="modalOpen = false" />
+          <UButton label="Update" color="primary" type="submit" />
         </div>
       </UForm>
     </template>

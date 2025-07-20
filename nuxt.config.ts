@@ -5,12 +5,22 @@ export default defineNuxtConfig({
     '@nuxt/ui-pro',
     '@vueuse/nuxt',
     '@nuxtjs/supabase',
+    '@nuxtjs/cloudinary',
     '@pinia/nuxt',
     'pinia-plugin-persistedstate'
   ],
 
   devtools: {
     enabled: true
+  },
+
+  cloudinary: {
+    cloudName: process.env.CLOUDINARY_CLOUD_NAME,
+    uploadPreset: 'my-custom-preset',
+    apiKey: process.env.CLOUDINARY_KEY,
+    analytics: true,
+    cloud: {},
+    url: {},
   },
 
   css: ['~/assets/css/main.css'],
