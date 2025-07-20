@@ -21,7 +21,7 @@ export const useUserStore = defineStore('user', {
     },
     getDisplayAvatar() {
       const name = encodeURIComponent(this.getDisplayName())
-      return `https://ui-avatars.com/api/?name=${name}`
+      return `https://ui-avatars.com/api/?name=${name}&background=random`
     },
     clearUser() {
       this.user = null

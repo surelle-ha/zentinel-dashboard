@@ -43,7 +43,7 @@ const state = reactive<Partial<Schema>>({
   description: undefined,
   price: undefined,
   quantity: undefined,
-  image: undefined, // holds Cloudinary URL
+  image: undefined,
   category: undefined,
   is_preorder: false,
   is_draft: false

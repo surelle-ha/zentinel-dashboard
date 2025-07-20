@@ -64,7 +64,7 @@ async function onChange(value: boolean, name: string) {
     <UPageCard variant="subtle" :ui="{ container: 'divide-y divide-default' }">
       <UFormField v-for="field in section.fields" :key="field.name" :name="field.name" :label="field.label"
         :description="field.description" class="flex items-center justify-between not-last:pb-4 gap-2">
-        <USwitch v-model="state[field.name]" @update:model-value="(val) => onChange(val, field.name)" />
+        <USwitch v-model="state[field.name]" @update:model-value="(val: any) => onChange(val, field.name)" />
       </UFormField>
     </UPageCard>
   </div>

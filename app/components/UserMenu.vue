@@ -123,6 +123,7 @@ const items = computed<DropdownMenuItem[][]>(() => ([[{
     :items="items"
     :content="{ align: 'center', collisionPadding: 12 }"
     :ui="{ content: collapsed ? 'w-48' : 'w-(--reka-dropdown-menu-trigger-width)' }"
+    v-if="userStore.isAuthenticated"
   >
     <UButton
       v-bind="{

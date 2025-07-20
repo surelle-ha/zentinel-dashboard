@@ -2,30 +2,28 @@
 import type { NavigationMenuItem } from '@nuxt/ui'
 
 const links = [[{
-  label: 'General',
-  icon: 'i-lucide-cog',
-  to: '/developer',
-  exact: true
-}, {
   label: 'Hyper Timer',
   icon: 'i-lucide-timer',
-  to: '/developer/hyper-timer',
+  to: '/dev-tools/hyper-timer',
   exact: true
 }, {
-  label: 'Users',
-  icon: 'i-lucide-users',
-  to: '/developer/users'
-}, {
-  label: 'Security',
-  icon: 'i-lucide-shield',
-  to: '/developer/security'
+  label: 'Mock API',
+  icon: 'i-lucide-server',
+  to: '/dev-tools/mock-api',
+  exact: true
+},
+{
+  label: 'ENV Digger',
+  icon: 'i-lucide-shovel',
+  to: '/dev-tools/env-digger',
+  exact: true
 }]] satisfies NavigationMenuItem[][]
 </script>
 
 <template>
   <UDashboardPanel id="settings" :ui="{ body: 'lg:py-12' }">
     <template #header>
-      <UDashboardNavbar title="Settings">
+      <UDashboardNavbar title="Developer Tools">
         <template #leading>
           <UDashboardSidebarCollapse />
         </template>

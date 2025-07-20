@@ -8,10 +8,10 @@ defineProps<{
 
 <template>
   <UButton v-bind="{
-    label: collapsed ? undefined : 'Zentinel Dashboard',
+    label: collapsed ? undefined : 'Codexer Space',
     avatar: {
       src: 'https://cdn-icons-gif.flaticon.com/6454/6454035.gif',
-      alt: 'Zentinel Dashboard'
+      alt: 'Codexer Space'
     },
   }" color="neutral" variant="ghost" block :square="collapsed" class="data-[state=open]:bg-elevated"
     :class="[!collapsed && 'py-2']" />

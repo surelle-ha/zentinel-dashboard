@@ -3,34 +3,20 @@ import type { NavigationMenuItem } from '@nuxt/ui'
 
 const links = [[{
   label: 'General',
-  icon: 'i-lucide-user',
-  to: '/settings',
+  icon: 'i-lucide-cog',
+  to: '/dev-settings',
   exact: true
 }, {
-  label: 'Notifications',
-  icon: 'i-lucide-bell',
-  to: '/settings/notifications'
-}, {
-  label: 'Security',
-  icon: 'i-lucide-shield',
-  to: '/settings/security'
-}], [{
-  label: 'Documentation',
-  icon: 'i-lucide-book-open',
-  to: 'https://ui.nuxt.com/getting-started/installation/pro/nuxt',
-  target: '_blank'
-}, {
-  label: 'Buy now',
-  icon: 'i-lucide-shopping-cart',
-  to: 'https://ui.nuxt.com/pro/purchase',
-  target: '_blank'
+  label: 'Users',
+  icon: 'i-lucide-users',
+  to: '/dev-settings/users'
 }]] satisfies NavigationMenuItem[][]
 </script>
 
 <template>
   <UDashboardPanel id="settings" :ui="{ body: 'lg:py-12' }">
     <template #header>
-      <UDashboardNavbar title="Settings">
+      <UDashboardNavbar title="Developer Settings">
         <template #leading>
           <UDashboardSidebarCollapse />
         </template>

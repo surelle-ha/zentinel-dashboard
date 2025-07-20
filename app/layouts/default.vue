@@ -3,69 +3,112 @@ import type { NavigationMenuItem } from '@nuxt/ui'
 
 const route = useRoute()
 const toast = useToast()
-const userStore = useUserStore()
-
 const open = ref(false)
-const showDeveloperSettings = ref(false)
+const userStore = useUserStore() // <-- Make sure you have this
 
-onMounted(() => {
-  showDeveloperSettings.value = userStore.user?.roles.name.toUpperCase() === 'ADMINISTRATOR';
+const isAuthenticated = computed(() => userStore.isAuthenticated)
+
+const links = computed<NavigationMenuItem[][]>(() => {
+  if (!isAuthenticated.value) {
+    // Only show Store if not authenticated
+    return [[
+      {
+        label: 'Store',
+        icon: 'i-lucide-store',
+        to: '/',
+        onSelect: () => { open.value = false }
+      },
+      {
+        label: 'FAQ',
+        icon: 'i-lucide-help-circle',
+        to: '/faq',
+        onSelect: () => { open.value = false }
+      }
+    ]]
+  }
+  // Show all links if authenticated
+  return [[
+    {
+      label: 'Announcements',
+      icon: 'i-lucide-megaphone',
+      to: '/announcements',
+      badge: '12',
+      onSelect: () => { open.value = false }
+    },
+    {
+      label: 'Store',
+      icon: 'i-lucide-store',
+      to: '/',
+      onSelect: () => { open.value = false }
+    },
+    {
+      label: 'FAQ',
+      icon: 'i-lucide-help-circle',
+      to: '/faq',
+      onSelect: () => { open.value = false }
+    },
+    {
+      label: 'Zentinel Faucet',
+      icon: 'i-lucide-zap',
+      to: '/faucet',
+      onSelect: () => { open.value = false }
+    },
+    {
+      label: 'Settings',
+      to: '/settings',
+      icon: 'i-lucide-settings',
+      defaultOpen: false,
+      type: 'trigger' as const,
+      children: [
+        { label: 'General', to: '/settings', exact: true, onSelect: () => { open.value = false } },
+        { label: 'Notifications', to: '/settings/notifications', onSelect: () => { open.value = false } },
+        { label: 'Security', to: '/settings/security', onSelect: () => { open.value = false } },
+      ]
+    },
+    {
+      label: 'Dashboard',
+      icon: 'i-lucide-grid',
+      to: '/dashboard',
+      onSelect: () => { open.value = false }
+    },
+    {
+      label: 'Inbox',
+      icon: 'i-lucide-inbox',
+      to: '/inbox',
+      badge: '4',
+      onSelect: () => { open.value = false }
+    },
+    {
+      label: 'Items',
+      icon: 'i-lucide-shopping-cart',
+      to: '/items',
+      onSelect: () => { open.value = false }
+    },
+    {
+      label: 'Developer Tools',
+      to: '/dev-tools',
+      icon: 'i-lucide-square-chevron-right',
+      defaultOpen: false,
+      type: 'trigger' as const,
+      children: [
+        { label: 'Hyper Timer', to: '/dev-tools/hyper-timer', onSelect: () => { open.value = false } },
+        { label: 'Mock API', to: '/dev-tools/mock-api', onSelect: () => { open.value = false } },
+        { label: 'ENV Digger', to: '/dev-tools/env-digger', onSelect: () => { open.value = false } },
+      ]
+    },
+    {
+      label: 'Developer Settings',
+      to: '/dev-settings',
+      icon: 'i-lucide-code',
+      defaultOpen: false,
+      type: 'trigger' as const,
+      children: [
+        { label: 'General', to: '/dev-settings', exact: true, onSelect: () => { open.value = false } },
+        { label: 'Users', to: '/dev-settings/users', onSelect: () => { open.value = false } },
+      ]
+    },
+  ]]
 })
-
-const links = computed<NavigationMenuItem[][]>(() => [[
-  {
-    label: 'Store',
-    icon: 'i-lucide-store',
-    to: '/',
-    onSelect: () => { open.value = false }
-  },
-  {
-    label: 'Home',
-    icon: 'i-lucide-house',
-    to: '/home',
-    onSelect: () => { open.value = false }
-  },
-  {
-    label: 'Inbox',
-    icon: 'i-lucide-inbox',
-    to: '/inbox',
-    badge: '4',
-    onSelect: () => { open.value = false }
-  },
-  {
-    label: 'Items',
-    icon: 'i-lucide-shopping-cart',
-    to: '/items',
-    onSelect: () => { open.value = false }
-  },
-  {
-    label: 'Settings',
-    to: '/settings',
-    icon: 'i-lucide-settings',
-    defaultOpen: false,
-    type: 'trigger' as const,
-    children: [
-      { label: 'General', to: '/settings', exact: true, onSelect: () => { open.value = false } },
-      { label: 'Members', to: '/settings/members', onSelect: () => { open.value = false } },
-      { label: 'Notifications', to: '/settings/notifications', onSelect: () => { open.value = false } },
-      { label: 'Security', to: '/settings/security', onSelect: () => { open.value = false } },
-    ]
-  },
-  ...(showDeveloperSettings.value ? [{
-    label: 'Developer Settings',
-    to: '/developer',
-    icon: 'i-lucide-code',
-    defaultOpen: false,
-    type: 'trigger' as const,
-    children: [
-      { label: 'General', to: '/developer', exact: true, onSelect: () => { open.value = false } },
-      { label: 'Hyper Timer', to: '/developer/hyper-timer', onSelect: () => { open.value = false } },
-      { label: 'Users', to: '/developer/users', onSelect: () => { open.value = false } },
-      { label: 'Security', to: '/developer/security', onSelect: () => { open.value = false } }
-    ]
-  }] : [])
-]])
-
 
 const groups = computed(() => [{
   id: 'links',
@@ -111,7 +154,7 @@ onMounted(async () => {
 
 <template>
   <UDashboardGroup unit="rem">
-    
+
     <UDashboardSidebar id="default" v-model:open="open" collapsible resizable class="bg-elevated/25"
       :ui="{ footer: 'lg:border-t lg:border-default' }">
       <template #header="{ collapsed }">

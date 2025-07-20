@@ -17,7 +17,7 @@ useHead({
   }
 })
 
-const title = 'Codexer Store'
+const title = 'Codexer Space'
 const description = 'Harold Eustaquio\'s personal store for digital products and resources.'
 
 useSeoMeta({

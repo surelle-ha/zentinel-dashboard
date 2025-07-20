@@ -1,7 +1,9 @@
 <script setup lang="ts">
 import type { Database } from '#build/types/supabase-database'
+import { user } from '#build/ui-pro'
 import type { DropdownMenuItem } from '@nuxt/ui'
 
+const userStore = useUserStore()
 const supabase = useSupabaseClient<Database>()
 const { isNotificationsSlideoverOpen } = useDashboard()
 const { items, getItems, subscribeItems } = useItem()
@@ -74,7 +76,7 @@ const buttonItems = [[
           <UDashboardSidebarCollapse />
         </template>
 
-        <template #right>
+        <template #right v-if="userStore.isAuthenticated">
           <UTooltip text="Notifications" :shortcuts="['N']">
             <UButton color="neutral" variant="ghost" square @click="isNotificationsSlideoverOpen = true">
               <UChip color="error" inset>
@@ -84,28 +86,26 @@ const buttonItems = [[
           </UTooltip>
 
           <UDropdownMenu :items="buttonItems">
-            <UButton icon="i-lucide-plus" size="md" class="rounded-full" />
+            <UButton icon="i-lucide-plus" size="md" class="rounded-full cursor-pointer" />
           </UDropdownMenu>
+        </template>
+        <template #right v-else>
+          <UButton icon="i-lucide-fingerprint" size="md" class="rounded-full cursor-pointer" label="Login" to="/auth/login"/>
         </template>
       </UDashboardNavbar>
     </template>
 
     <template #body>
       <div class="flex flex-col gap-6 sm:gap-8 lg:gap-14 w-full lg:max-w-6xl mx-auto">
-        <UPageCard
-          title="Codexer Store"
+        <UPageCard title="Codexer Space"
           description="Explore our collection of tools and resources designed to enhance your development experience."
-          icon="i-simple-icons-homeassistantcommunitystore"
-          orientation="horizontal"
-          spotlight
-          spotlight-color="primary"
-        />
+          icon="i-simple-icons-homeassistantcommunitystore" orientation="horizontal" spotlight
+          spotlight-color="primary" />
 
         <div v-for="(section, index) in sections" :key="index">
           <UPageCard :title="section.title" :description="section.description" variant="naked" class="mb-4" />
-          <UPageCard variant="subtle" :ui="{ container: 'divide-y divide-default' }" 
-          spotlight
-          spotlight-color="primary">
+          <UPageCard variant="subtle" :ui="{ container: 'divide-y divide-default' }" spotlight
+            spotlight-color="primary">
             <UBlogPosts :posts="section.items" />
           </UPageCard>
         </div>
